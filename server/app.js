@@ -1,6 +1,7 @@
 import express from 'express'
 import { dbConnect } from './dbConnect/dbConnect.js'
-import userRoute from './routes/userRoute.js'
+import authRoute from './routes/authRoute.js'
+// import userRoute from './routes/userRoute.js'
 const app = express()
 
 
@@ -11,4 +12,5 @@ app.use(express.json())
 dbConnect(app)
 
 // Routes
-app.use('api/v1/user', userRoute)
+app.use('/api/v1/auth', authRoute)
+// app.use('api/v1/user', userRoute)

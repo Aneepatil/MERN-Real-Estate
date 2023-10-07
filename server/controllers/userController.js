@@ -1,7 +1,7 @@
 import { User } from "../models/UserModel.js";
 import bcrypt from "bcryptjs";
 
-export const register = async (req, res) => {
+export const register = async (req, res,next) => {
   const { username, email, password } = req.body;
   try {
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -18,6 +18,7 @@ export const register = async (req, res) => {
         newUser,
       });
   } catch (error) {
-    res.status(500).json({ status: "failed", errorMessage:error.message });
+    next(error)
+    // res.status(500).json({ status: "failed", errorMessage:error.message });
   }
 };

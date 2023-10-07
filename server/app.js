@@ -1,6 +1,7 @@
 import express from 'express'
 import { dbConnect } from './dbConnect/dbConnect.js'
 import authRoute from './routes/authRoute.js'
+import { globleErrorHandler } from './middlewares/globleErrorHandler.js'
 // import userRoute from './routes/userRoute.js'
 const app = express()
 
@@ -14,3 +15,6 @@ dbConnect(app)
 // Routes
 app.use('/api/v1/auth', authRoute)
 // app.use('api/v1/user', userRoute)
+
+// Error Handler Middleware
+app.use(globleErrorHandler)

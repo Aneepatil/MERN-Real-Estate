@@ -23,7 +23,7 @@ export const register = async (req, res, next) => {
     });
 
     res.status(201).json({
-      status: "success",
+      success: true,
       message: "User registered successfully",
       newUser,
     });
@@ -54,7 +54,7 @@ export const login = async (req, res, next) => {
         .cookie("access-token", token, { httpOnly: true })
         .status(200)
         .json({
-          status: "success",
+          success: true,
           message: "User logged in successfully",
           user: { ...others, token },
         });

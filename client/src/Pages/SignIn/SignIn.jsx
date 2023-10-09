@@ -7,6 +7,7 @@ import {
   signInStart,
   signInSuccess,
 } from "../../redux/slices/userSlice.js/userSlice";
+import OAuth from "../../components/OAuth/OAuth";
 
 const SignIn = () => {
   const navigate = useNavigate();
@@ -23,7 +24,7 @@ const SignIn = () => {
     dispatch(signInStart());
 
     try {
-      const { data } = await axios.post("/api/v1/auth/sign-in", formData);
+      const { data } = await axios.post("api/v1/auth/sign-in", formData);
 
       if (data.success === false) {
         dispatch(signInFailuer(data.message));
@@ -61,6 +62,7 @@ const SignIn = () => {
         >
           {loading ? "Loading..." : "Sign In"}
         </button>
+        <OAuth/>
       </form>
       <div className="flex gap-2 mt-5">
         <p>Do not have an account?</p>

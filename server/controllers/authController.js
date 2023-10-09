@@ -63,3 +63,50 @@ export const login = async (req, res, next) => {
     next(error);
   }
 };
+
+// Google Sign in
+
+export const googleSignin = async (req, res, next) => {
+  try {
+    // Is email registered
+    const user = await User.findOne({ email:req.body.email });
+
+    if (user) {
+      const token = await generateToken(user._id);
+      const { password, ...others } = user._doc;
+      res
+        .cookie("access-token", token, { httpOnly: true })
+        .status(200)
+        .json({
+          success: true,
+          message: "User logged in successfully",
+          user: { ...others, token },
+        });
+    } else {
+      const generatePassword =
+        Math.random().toString(36).slice(-8) +
+        Math.random().toString(36).slice(-8);
+
+      const hashedPassword = await hashPassword(generatePassword);
+      const newUser = await User.create({
+        username: req.body.name,
+        email: req.body.email,
+        password: hashedPassword,
+        avatar: req.body.photo,
+      });
+
+      const token = await generateToken(newUser._id);
+
+      res
+        .cookie("access-token", token, { httpOnly: true })
+        .status(200)
+        .json({
+          success: true,
+          message: "User logged in successfully",
+          user: { ...others, token },
+        });
+    }
+  } catch (error) {
+    next(error);
+  }
+};

@@ -1,8 +1,10 @@
-import express from 'express'
-import { register } from '../controllers/userController.js'
+import express from "express";
+import { getAllUsers, updateUser } from "../controllers/userController.js";
+import { verifyToken } from "../utils/verifyToken.js";
 
-const userRoute = express.Router()
+const userRoute = express.Router();
 
-userRoute.post('/sign-up',register)
+userRoute.get("/", getAllUsers);
+userRoute.put("/update/:id",verifyToken, updateUser);
 
-export default userRoute
+export default userRoute;

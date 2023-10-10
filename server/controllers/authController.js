@@ -51,7 +51,7 @@ export const login = async (req, res, next) => {
       const { password, ...others } = isUserExist._doc;
       const token = await generateToken(isUserExist._id);
       res
-        .cookie("access-token", token, { httpOnly: true })
+        .cookies("access_token", token, { httpOnly: true })
         .status(200)
         .json({
           success: true,
@@ -75,7 +75,7 @@ export const googleSignin = async (req, res, next) => {
       const token = await generateToken(user._id);
       const { password, ...others } = user._doc;
       res
-        .cookie("access-token", token, { httpOnly: true })
+        .cookie("access_token", token, { httpOnly: true })
         .status(200)
         .json({
           success: true,
@@ -98,7 +98,7 @@ export const googleSignin = async (req, res, next) => {
       const token = await generateToken(newUser._id);
 
       res
-        .cookie("access-token", token, { httpOnly: true })
+        .cookie("access_token", token, { httpOnly: true })
         .status(200)
         .json({
           success: true,

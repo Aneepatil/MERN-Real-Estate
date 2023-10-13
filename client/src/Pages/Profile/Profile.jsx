@@ -12,6 +12,9 @@ import {
   deleteUserFailure,
   deleteUserStart,
   deleteUserSuccess,
+  signOutUserFailure,
+  signOutUserStart,
+  signOutUserSuccess,
   updateUserFailure,
   updateUserStart,
   updateUserSuccess,
@@ -100,11 +103,38 @@ const Profile = () => {
       const { data } = await axios.delete(
         `/api/v1/users/delete/${currentUser?._id}`
       );
+
+      if (data.success === false) {
+        dispatch(deleteUserFailure(data.message));
+        return;
+      }
       dispatch(deleteUserSuccess(data));
+
       navigate("/sign-in");
     } catch (error) {
-      console.log(error)
-      dispatch(deleteUserFailure(error.message));
+      console.log(error);
+      dispatch(deleteUserFailure(error?.response?.data?.message));
+    }
+  };
+
+  const handleSignOutUser = async () => {
+    try {
+      dispatch(signOutUserStart());
+
+      const { data } = await axios.get(
+        `/api/v1/auth/sign-out`
+      );
+
+      if (data.success === false) {
+        dispatch(signOutUserFailure(data.message));
+        return;
+      }
+      dispatch(signOutUserSuccess(data));
+
+      navigate("/sign-in");
+    } catch (error) {
+      console.log(error);
+      dispatch(signOutUserFailure(error?.response?.data?.message));
     }
   };
 
@@ -178,7 +208,7 @@ const Profile = () => {
         >
           Delete account
         </span>
-        <span className="text-red-700 cursor-pointer uppercase">Sign out</span>
+        <span className="text-red-700 cursor-pointer uppercase" onClick={handleSignOutUser}>Sign out</span>
       </div>
       <p className="text-red-700 mt-5">{error ? error : ""}</p>
       <p className="text-green-700 mt-5">

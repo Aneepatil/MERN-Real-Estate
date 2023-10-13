@@ -22,8 +22,7 @@ const SignIn = () => {
 
     try {
       const {data} = await axios.post("api/v1/auth/sign-in", formData);
-
-      console.log(data);
+      console.log(data)
       if (data?.success === false) {
         dispatch(signInFailure(data?.message));
         return;
@@ -31,7 +30,7 @@ const SignIn = () => {
       dispatch(signInSuccess(data));
       navigate("/");
     } catch (error) {
-      dispatch(signInFailure(error.response.data.message));
+      dispatch(signInFailure(error?.response?.data?.message));
     }
   };
 

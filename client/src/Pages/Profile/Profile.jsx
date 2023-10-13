@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import {
   getDownloadURL,
   getStorage,
@@ -8,6 +9,9 @@ import {
 } from "firebase/storage";
 import { app } from "../../firebase";
 import {
+  deleteUserFailure,
+  deleteUserStart,
+  deleteUserSuccess,
   updateUserFailure,
   updateUserStart,
   updateUserSuccess,
@@ -16,12 +20,14 @@ import axios from "axios";
 
 const Profile = () => {
   const { currentUser, loading, error } = useSelector((state) => state.user);
+  const navigate = useNavigate();
   const dispatch = useDispatch();
   const fileRef = useRef(null);
   const [file, setFile] = useState(undefined);
   const [filePercentage, setFilePercentage] = useState();
   const [fileUploadErr, setFileUploadErr] = useState(false);
   const [formData, setFormData] = useState({});
+  const [updateSuccess, setUpdateSuccess] = useState(false);
   const maxFileSize = 2 * 1024 * 1024;
 
   useEffect(() => {
@@ -70,7 +76,7 @@ const Profile = () => {
     e.preventDefault();
     try {
       dispatch(updateUserStart());
-      const {data} = await axios.put(
+      const { data } = await axios.put(
         `/api/v1/users/update/${currentUser?._id}`,
         formData
       );
@@ -81,9 +87,24 @@ const Profile = () => {
       }
       // sending updated response
       dispatch(updateUserSuccess(data));
-      
+      setUpdateSuccess(true);
     } catch (error) {
       dispatch(updateUserFailure(error?.response?.data?.message));
+    }
+  };
+
+  const handleDeleteUser = async () => {
+    try {
+      dispatch(deleteUserStart());
+
+      const { data } = await axios.delete(
+        `/api/v1/users/delete/${currentUser?._id}`
+      );
+      dispatch(deleteUserSuccess(data));
+      navigate("/sign-in");
+    } catch (error) {
+      console.log(error)
+      dispatch(deleteUserFailure(error.message));
     }
   };
 
@@ -140,22 +161,29 @@ const Profile = () => {
           onChange={handleChange}
           id="password"
         />
-        <button disabled={loading} className="uppercase bg-slate-700 p-3 hover:opacity-80 disabled:opacity-95 rounded-lg text-white">
-          {loading ? 'loading...':'update'}
+        <button
+          disabled={loading}
+          className="uppercase bg-slate-700 p-3 hover:opacity-80 disabled:opacity-95 rounded-lg text-white"
+        >
+          {loading ? "loading..." : "update"}
         </button>
         <button className="uppercase bg-green-700 p-3 hover:opacity-80 disabled:opacity-95 rounded-lg text-white">
           create listing
         </button>
       </form>
-        <div className="flex justify-between mt-3">
-          <span className="text-red-700 cursor-pointer uppercase">
-            Delete account
-          </span>
-          <span className="text-red-700 cursor-pointer uppercase">
-            Sign out
-          </span>
-        </div>
-        <p className="text-red-700 mt-5">{error? error:''}</p>
+      <div className="flex justify-between mt-3">
+        <span
+          className="text-red-700 cursor-pointer uppercase"
+          onClick={handleDeleteUser}
+        >
+          Delete account
+        </span>
+        <span className="text-red-700 cursor-pointer uppercase">Sign out</span>
+      </div>
+      <p className="text-red-700 mt-5">{error ? error : ""}</p>
+      <p className="text-green-700 mt-5">
+        {updateSuccess ? "User updated successfully" : ""}
+      </p>
     </div>
   );
 };

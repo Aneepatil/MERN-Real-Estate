@@ -2,18 +2,15 @@ import axios from "axios";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
-import {
-  signInFailuer,
-  signInStart,
-  signInSuccess,
-} from "../../redux/slices/userSlice.js/userSlice";
 import OAuth from "../../components/OAuth/OAuth";
+import { signInFailure, signInStart, signInSuccess } from "../../redux/slices/userSlice/userSlice";
 
 const SignIn = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [formData, setFormData] = useState({});
-  const { loading, error } = useSelector((state) => state.user);
+  const {loading,error} = useSelector((state) => state.user);
+  
 
   const handleChange = (e) => {
     const { id, value } = e.target;
@@ -24,17 +21,17 @@ const SignIn = () => {
     dispatch(signInStart());
 
     try {
-      const { data } = await axios.post("api/v1/auth/sign-in", formData);
+      const {data} = await axios.post("api/v1/auth/sign-in", formData);
 
-      if (data.success === false) {
-        dispatch(signInFailuer(data.message));
+      console.log(data);
+      if (data?.success === false) {
+        dispatch(signInFailure(data?.message));
         return;
       }
       dispatch(signInSuccess(data));
-      console.log(data);
       navigate("/");
     } catch (error) {
-      dispatch(signInFailuer(error.response.data.message));
+      dispatch(signInFailure(error.response.data.message));
     }
   };
 
@@ -62,7 +59,7 @@ const SignIn = () => {
         >
           {loading ? "Loading..." : "Sign In"}
         </button>
-        <OAuth/>
+        <OAuth />
       </form>
       <div className="flex gap-2 mt-5">
         <p>Do not have an account?</p>

@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import {
   getDownloadURL,
   getStorage,
@@ -7,9 +7,16 @@ import {
   uploadBytesResumable,
 } from "firebase/storage";
 import { app } from "../../firebase";
+import {
+  updateUserFailure,
+  updateUserStart,
+  updateUserSuccess,
+} from "../../redux/slices/userSlice/userSlice";
+import axios from "axios";
 
 const Profile = () => {
-  const { user } = useSelector((state) => state.user.currentUser);
+  const { currentUser, loading, error } = useSelector((state) => state.user);
+  const dispatch = useDispatch();
   const fileRef = useRef(null);
   const [file, setFile] = useState(undefined);
   const [filePercentage, setFilePercentage] = useState();
@@ -21,7 +28,7 @@ const Profile = () => {
     if (file) {
       if (file.size > maxFileSize) {
         setFile(null);
-        setFileUploadErr(true)
+        setFileUploadErr(true);
         return;
       }
       handleFileChange(file);
@@ -55,10 +62,35 @@ const Profile = () => {
     );
   };
 
+  const handleChange = (e) => {
+    const { id, value } = e.target;
+    setFormData({ ...formData, [id]: value });
+  };
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      dispatch(updateUserStart());
+      const {data} = await axios.put(
+        `/api/v1/users/update/${currentUser?._id}`,
+        formData
+      );
+
+      if (data.success === false) {
+        dispatch(updateUserFailure(data.message));
+        return;
+      }
+      // sending updated response
+      dispatch(updateUserSuccess(data));
+      
+    } catch (error) {
+      dispatch(updateUserFailure(error?.response?.data?.message));
+    }
+  };
+
   return (
     <div className="p-3 max-w-lg mx-auto">
       <h1 className="text-3xl font-semibold text-center my-7">Profile</h1>
-      <form className="flex flex-col gap-3">
+      <form onSubmit={handleSubmit} className="flex flex-col gap-3">
         <input
           onChange={(e) => setFile(e.target.files[0])}
           type="file"
@@ -69,44 +101,52 @@ const Profile = () => {
         <img
           onClick={() => fileRef.current.click()}
           className="rounded-full w-24 h-24 self-center object-cover cursor-pointer"
-          src={formData.avatar || user.avatar}
+          src={currentUser?.avatar}
           alt="profile-pic"
         />
         <p className="text-sm self-center">
-        {fileUploadErr ? (
-          <span className="text-red-700">Error Image Upload or Image size must be less than 2MB</span>
-        ) : filePercentage > 0 && filePercentage < 100 ? (
-          <span className="text-slate-700">{`Image uploading ${filePercentage}%...`}</span>
-        ) : filePercentage === 100 ? (
-          <span className="text-slate-700">Image Uploaded Successfully</span>
-        ) : (
-          ""
-        )}
+          {fileUploadErr ? (
+            <span className="text-red-700">
+              Error Image Upload or Image size must be less than 2MB
+            </span>
+          ) : filePercentage > 0 && filePercentage < 100 ? (
+            <span className="text-slate-700">{`Image uploading ${filePercentage}%...`}</span>
+          ) : filePercentage === 100 ? (
+            <span className="text-slate-700">Image Uploaded Successfully</span>
+          ) : (
+            ""
+          )}
         </p>
         <input
           type="text"
+          defaultValue={currentUser?.username}
           placeholder="username"
           className="border p-3 rounded-lg"
+          onChange={handleChange}
           id="username"
         />
         <input
           type="email"
           placeholder="email"
+          defaultValue={currentUser?.email}
           className="border p-3 rounded-lg"
+          onChange={handleChange}
           id="email"
         />
         <input
-          type="text"
+          type="password"
           placeholder="password"
           className="border p-3 rounded-lg"
+          onChange={handleChange}
           id="password"
         />
-        <button className="uppercase bg-slate-700 p-3 hover:opacity-80 disabled:opacity-95 rounded-lg text-white">
-          update
+        <button disabled={loading} className="uppercase bg-slate-700 p-3 hover:opacity-80 disabled:opacity-95 rounded-lg text-white">
+          {loading ? 'loading...':'update'}
         </button>
         <button className="uppercase bg-green-700 p-3 hover:opacity-80 disabled:opacity-95 rounded-lg text-white">
           create listing
         </button>
+      </form>
         <div className="flex justify-between mt-3">
           <span className="text-red-700 cursor-pointer uppercase">
             Delete account
@@ -115,7 +155,7 @@ const Profile = () => {
             Sign out
           </span>
         </div>
-      </form>
+        <p className="text-red-700 mt-5">{error? error:''}</p>
     </div>
   );
 };

@@ -48,16 +48,12 @@ export const login = async (req, res, next) => {
     if (!originalPass) return next(appError(404, "Invalid Login Credentials"));
 
     if (isUserExist && originalPass) {
-      const { password, ...others } = isUserExist._doc;
+      const { password, ...rest } = isUserExist._doc;
       const token = await generateToken(isUserExist._id);
       res
-        .cookies("access_token", token, { httpOnly: true })
-        .status(200)
-        .json({
-          success: true,
-          message: "User logged in successfully",
-          user: { ...others, token },
-        });
+      .cookie('access_token', token, { httpOnly: true })
+      .status(200)
+      .json(rest);
     }
   } catch (error) {
     next(error);
@@ -73,15 +69,11 @@ export const googleSignin = async (req, res, next) => {
 
     if (user) {
       const token = await generateToken(user._id);
-      const { password, ...others } = user._doc;
+      const { password, ...rest } = user._doc;
       res
-        .cookie("access_token", token, { httpOnly: true })
-        .status(200)
-        .json({
-          success: true,
-          message: "User logged in successfully",
-          user: { ...others, token },
-        });
+      .cookie('access_token', token, { httpOnly: true })
+      .status(200)
+      .json(rest);
     } else {
       const generatePassword =
         Math.random().toString(36).slice(-8) +
@@ -96,15 +88,11 @@ export const googleSignin = async (req, res, next) => {
       });
 
       const token = await generateToken(newUser._id);
-
+      const { password, ...rest } = newUser._doc;
       res
-        .cookie("access_token", token, { httpOnly: true })
+        .cookie('access_token', token, { httpOnly: true })
         .status(200)
-        .json({
-          success: true,
-          message: "User logged in successfully",
-          user: { ...others, token },
-        });
+        .json(rest);
     }
   } catch (error) {
     next(error);

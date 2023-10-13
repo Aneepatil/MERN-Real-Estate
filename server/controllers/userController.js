@@ -2,7 +2,6 @@ import { User } from "../models/UserModel.js";
 import { appError } from "../utils/appError.js";
 import { hashPassword } from "../utils/hashPassword.js";
 
-
 // Getting all users
 export const getAllUsers = async (req, res, next) => {
   try {
@@ -42,11 +41,9 @@ export const updateUser = async (req, res, next) => {
       { new: true }
     );
 
-    const { password, ...others } = updatedUser._doc;
+    const { password, ...rest } = updatedUser._doc;
 
-    res
-      .status(200)
-      .json({ success: true, message: "User updated successfully...", others });
+    res.status(200).json(rest);
   } catch (error) {
     next(error);
   }

@@ -5,6 +5,7 @@ import authRoute from './routes/authRoute.js'
 import { globleErrorHandler } from './middlewares/globleErrorHandler.js'
 import cookieParser from 'cookie-parser'
 import userRoute from './routes/userRoute.js'
+import propertiesRoute from './routes/propertiesRoute.js'
 const app = express()
 
 
@@ -19,6 +20,7 @@ dbConnect(app)
 // Routes
 app.use('/api/v1/auth', authRoute)
 app.use('/api/v1/users', userRoute)
+app.use('/api/v1/properties', propertiesRoute)
 
 // Error Handler Middleware
 app.use(globleErrorHandler)

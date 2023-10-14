@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import {
   getDownloadURL,
   getStorage,
@@ -121,9 +121,7 @@ const Profile = () => {
     try {
       dispatch(signOutUserStart());
 
-      const { data } = await axios.get(
-        `/api/v1/auth/sign-out`
-      );
+      const { data } = await axios.get(`/api/v1/auth/sign-out`);
 
       if (data.success === false) {
         dispatch(signOutUserFailure(data.message));
@@ -197,9 +195,9 @@ const Profile = () => {
         >
           {loading ? "loading..." : "update"}
         </button>
-        <button className="uppercase bg-green-700 p-3 hover:opacity-80 disabled:opacity-95 rounded-lg text-white">
-          create listing
-        </button>
+          <Link to={'/create-new-property'} className="uppercase text-center bg-green-700 p-3 hover:opacity-80 disabled:opacity-95 rounded-lg text-white">
+            create property
+          </Link>
       </form>
       <div className="flex justify-between mt-3">
         <span
@@ -208,7 +206,12 @@ const Profile = () => {
         >
           Delete account
         </span>
-        <span className="text-red-700 cursor-pointer uppercase" onClick={handleSignOutUser}>Sign out</span>
+        <span
+          className="text-red-700 cursor-pointer uppercase"
+          onClick={handleSignOutUser}
+        >
+          Sign out
+        </span>
       </div>
       <p className="text-red-700 mt-5">{error ? error : ""}</p>
       <p className="text-green-700 mt-5">

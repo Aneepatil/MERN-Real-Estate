@@ -19,6 +19,11 @@ export const createProperty = async (req, res, next) => {
   } = req.body;
 
   try {
+
+    if(regularPrice < discountPrice){
+      return next(appError(400,'Regular price should be higher than the discounted price'))
+    }
+
     const property = await Property.create({
       name,
       description,

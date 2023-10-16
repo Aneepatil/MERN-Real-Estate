@@ -64,6 +64,35 @@ export const getProperties = async (req, res, next) => {
   }
 };
 
+
+
+
+// Get all Properties Of Perticualar User
+export const getAllPropertiesOfPerticualarUser = async (req, res, next) => {
+  const {userId} = req.params
+  try {
+
+    if(req.user !== userId){
+      return next(appError(404,'Enter valid userId...'))
+    }
+    const property = await Property.find({userRef:userId});
+
+    // Check the property in database exist or not
+    if (!property) {
+      return next(appError(404, "Property not found..."));
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Properties fetched successfully...",
+      property,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+
 // Get Property
 export const getProperty = async (req, res, next) => {
   try {

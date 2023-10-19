@@ -8,6 +8,7 @@ import Header from "./components/Header/Header";
 import Profile from "./Pages/Profile/Profile";
 import { PrivateRoute } from "./components/PrivateRoute/PrivateRoute";
 import Property from "./Pages/Property/Property";
+import UpdateProperty from "./Pages/UpdateProperty/UpdateProperty";
 
 const App = () => {
   
@@ -20,8 +21,9 @@ const App = () => {
         <Route path="/sign-up" element={<SignUp />} />
         <Route path="/sign-in" element={<SignIn />} />
         <Route element={<PrivateRoute />}>
-          <Route path="/profile" element={<Profile />} exact />
-          <Route path="/create-new-property" element={<Property />} exact />
+          <Route path="/profile" element={<Profile />}/>
+          <Route path="/create-new-property" element={<Property />}/>
+          <Route path="/update-property/:id" element={<UpdateProperty />}/>
         </Route>
       </Routes>
     </>

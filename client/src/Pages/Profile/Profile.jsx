@@ -160,7 +160,9 @@ const Profile = () => {
       if (data.success === false) {
         console.log(data.message);
       } else {
-        setShowProperties((prev) => prev.filter((property) => property._id !== id));
+        setShowProperties((prev) =>
+          prev.filter((property) => property._id !== id)
+        );
       }
     } catch (error) {}
   };
@@ -260,7 +262,7 @@ const Profile = () => {
 
       <div className="flex flex-col gap-2 mt-3">
         <p className="flex text-center justify-center text-2xl font-semibold uppercase">
-          {showProperties.length > 0 && 'Properties list'}
+          {showProperties.length > 0 && "Properties list"}
         </p>
         {showProperties &&
           showProperties.length > 0 &&
@@ -283,7 +285,9 @@ const Profile = () => {
                 <p>{property.name}</p>
               </Link>
               <div className="flex flex-col item-center">
-                <button className="text-green-700 uppercase">Edit</button>
+                <Link to={`/update-property/${property._id}`}>
+                  <button className="text-green-700 uppercase flex justify-center">Edit</button>
+                </Link>
                 <button
                   className="text-red-700 uppercase"
                   onClick={() => handlePropertyDelete(property._id)}

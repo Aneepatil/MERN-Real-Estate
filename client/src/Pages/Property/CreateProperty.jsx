@@ -4,14 +4,13 @@ import {
   ref,
   uploadBytesResumable,
 } from "firebase/storage";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { app } from "../../firebase";
 import axios from "axios";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate } from 'react-router-dom';
 
-const UpdateProperty = () => {
-  const navigate = useNavigate();
-  const params = useParams();
+const CreateProperty = () => {
+  const navigate = useNavigate()
   const [files, setFiles] = useState([]);
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState(false);
@@ -32,15 +31,6 @@ const UpdateProperty = () => {
     furnished: false,
   });
   const [imageUploadError, setImageUploadError] = useState(false);
-
-  useEffect(() => {
-    const fetchProperty = async () => {
-      const propertyId = params.id;
-      const { data } = await axios.get(`/api/v1/properties/${propertyId}`);
-      setFormData(data.property);
-    };
-    fetchProperty();
-  }, []);
 
   const handleImageSubmit = (e) => {
     if (files.length > 0 && files.length + formData.imageUrl.length < 7) {
@@ -137,9 +127,7 @@ const UpdateProperty = () => {
       });
     }
   };
-
   const handleClick = async (e) => {
-    const propertyId = params.id;
     e.preventDefault();
     try {
       if (formData.imageUrl < 1) {
@@ -147,18 +135,16 @@ const UpdateProperty = () => {
       }
       setLoading(true);
       setError(false);
-      const { data } = await axios.put(
-        `/api/v1/properties/${propertyId}`,
-        formData
-      );
+      const { data } = await axios.post(`/api/v1/properties`, formData);
       if (data.success === false) {
         setError(data.message);
-      } else {
-        setLoading(false);
-        setSuccess(data.message);
-        navigate(`/property/${propertyId}`);
       }
+      console.log(data);
+      setLoading(false);
+      // setSuccess(data.message);
+      navigate(`/properties/${data.property._id}`)
     } catch (error) {
+      console.log(error);
       setError(error?.response?.data?.message);
       setLoading(false);
     }
@@ -167,7 +153,7 @@ const UpdateProperty = () => {
   return (
     <main className="p-3 max-w-4xl mx-auto">
       <h1 className="text-center text-3xl font-semibold my-7 uppercase">
-        update a property
+        create a property
       </h1>
       <form className="flex flex-col sm:flex-row gap-4">
         <div className="flex flex-col gap-4 flex-1">
@@ -343,8 +329,8 @@ const UpdateProperty = () => {
             </button>
           </div>
           {imageUploadError && imageUploadError}
-          {formData?.imageUrl?.length > 0
-            ? formData?.imageUrl?.map((url, index) => (
+          {formData.imageUrl.length > 0
+            ? formData.imageUrl.map((url, index) => (
                 <div
                   className="flex justify-between px-5 border items-center"
                   key={index}
@@ -370,7 +356,7 @@ const UpdateProperty = () => {
             onClick={handleClick}
             className="rounded-lg uppercase text-white bg-slate-700 p-3 hover:opacity-75 disabled:opacity-0"
           >
-            {loading ? "Updating..." : " update"}
+            {loading ? "Creating..." : " create property"}
           </button>
           {error && <p className="text-red-700 text-sm">{error}</p>}
           {success && <p className="text-green-700 text-sm">{success}</p>}
@@ -380,4 +366,4 @@ const UpdateProperty = () => {
   );
 };
 
-export default UpdateProperty;
+export default CreateProperty;

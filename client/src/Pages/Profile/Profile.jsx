@@ -271,7 +271,7 @@ const Profile = () => {
               className="flex justify-between gap-4 items-center p-2 border rounded-lg"
               key={property._id}
             >
-              <Link to={`property/${property._id}`}>
+              <Link to={`/property/${property._id}`}>
                 <img
                   src={property.imageUrl[0]}
                   alt="property-image"
@@ -280,7 +280,7 @@ const Profile = () => {
               </Link>
               <Link
                 className="text-slate-700 font-semibold flex-1 truncate"
-                to={`property/${property._id}`}
+                to={`/property/${property._id}`}
               >
                 <p>{property.name}</p>
               </Link>

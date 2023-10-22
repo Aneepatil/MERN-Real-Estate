@@ -187,8 +187,6 @@ const UpdateProperty = () => {
             placeholder="description"
             id="description"
             className="rounded-lg p-3 border"
-            maxLength={62}
-            minLength={10}
             required
             onChange={handleFormSubmit}
             value={formData.description}
@@ -381,3 +379,5 @@ const UpdateProperty = () => {
 };
 
 export default UpdateProperty;
+
+

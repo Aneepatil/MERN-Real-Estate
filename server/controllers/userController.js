@@ -1,3 +1,4 @@
+import { app } from "../../client/src/firebase.js";
 import { User } from "../models/UserModel.js";
 import { appError } from "../utils/appError.js";
 import { hashPassword } from "../utils/hashPassword.js";
@@ -66,6 +67,22 @@ export const signOutUser = async (req, res, next) => {
   try {
     res.clearCookie("access_token");
     res.status(200).json("User signed out successfully...");
+  } catch (error) {
+    next(error);
+  }
+};
+
+
+// Get user
+export const getUser = async (req, res, next) => {
+  try {
+    const user = await User.findById(req.params.id);
+    if(!user) return next(appError(404, 'User Not Found...'))
+
+    const {password,...other}=user._doc
+    res
+      .status(200)
+      .json({ success: true, message: "User fetched successfully...", other });
   } catch (error) {
     next(error);
   }
